@@ -1,0 +1,25 @@
+FileSharing Usage Information
+
+USAGE:
+ To start Group Server: java -cp .:bcprov-jdk15on-151.jar RunGroupServer [(optional) port number]
+ When the group server is first started, there are no users or groups. Since 
+ there must be an administer of the system, the user is prompted via the console
+ to enter a username. This name becomes the first user and is a member of the
+ ADMIN group.  Also, no groups exist.  The group server will by default
+ run on port 8765, but a custom port can be passed as the first command line
+ argument.  Two files "groupPubKey.txt" and "groupPrivKey.txt" are created on 
+ first start up.  The "groupPubKey.txt" file must be manually moved to the working 
+ directory of every file server before the file server starts up.  
+
+ To start the File Server: java -cp .:bcprov-jdk15on-151.jar RunFileServer [(optional) port number]
+ The file server will create a "shared_files" inside the working directory if one 
+ does not exist. The file server is now online.  The file server will by default
+ run on port 4321, but a custom port can be passed as the first command line
+ argument.
+
+ To reset the File server completely delete "FileList.bin", "groupPubKey.txt" and the "shared_files" 
+ directory.
+ To reset the Group Server completely delete "UserList.bin", "GroupList.bin", "groupPubKey.txt", and "groupPrivKey.txt".
+ 
+ Note that this implementation supports server side directories.
+

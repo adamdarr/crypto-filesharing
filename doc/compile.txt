@@ -1,0 +1,4 @@
+Once inside src/ folder,
+
+COMPILE: javac -cp .:bcprov-jdk15on-151.jar *.java
+

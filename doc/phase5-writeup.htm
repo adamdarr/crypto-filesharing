@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>CS 1653 Project P5 Writeup</title>
+  <link href="http://fonts.googleapis.com/css?family=Ubuntu:bold" rel="stylesheet" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=Vollkorn" rel="stylesheet" type="text/css">
+  <link href="img/lock.ico" rel="shortcut icon" type="image/x-icon" />	<!--favicon-->
+
+
+  <style>
+/* BEGIN CHANGES HERE */
+
+/* In this section, you may add CSS styling if desired */
+sup	/*for exponent to be a smaller size*/
+{
+    vertical-align: super;
+    font-size: x-small;
+}
+	
+hr
+{
+	border-color:#8B0000;
+}
+
+header 
+{
+	text-align: center;
+}
+
+.section 
+{
+	border: 2px solid black;
+	border-radius: 10px;
+	border-color: #8B0000;
+	padding:10px;
+	margin-left:15%;
+	margin-right:15%;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	background-color: white;
+}
+
+pre {
+    white-space: pre-wrap;
+}
+
+nav 
+{
+	margin-bottom:15px;	
+}
+
+.navitem	/*navbar color*/ 
+{	
+	border: 2px solid black;
+	border-radius:8px;
+	border-color: #8B0000;
+	font-size:18px;
+	padding:4px;
+	margin-right:5px;
+	margin-bottom:5px;
+	text-decoration: none;
+	color: #8B0000;
+}
+
+.navitem:hover	/*hover color to be opposite*/ 
+{	
+	border-color:#8B0000;
+	background-color:#8B0000;
+	color:#E9DDC6;
+}
+
+img	/*centers image*/
+{	
+	max-width: 100%;
+}
+
+.ubuntu	/*ubuntu font*/
+{
+	font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+}
+
+.red
+{
+	color: #8B0000;
+}
+
+p	/*all paragraph tags will be the same*/
+{
+	color: #3C3C3C;	/*Gray*/
+	font-family: 'Vollkorn', Georgia, Times, serif;
+}
+
+.left
+{
+	float:left;
+	text-align:left;
+    width:18.33333%;
+	margin-left:15%;
+}
+
+.center
+{
+	float: left;
+    text-align:center;
+    width:33.33333%;
+}
+
+.right
+{
+	float: left;
+    text-align:right;
+    width:18.33333%;
+	margin-right:15%;
+}
+
+.negative	/*negative bottom margin*/
+{
+	margin-bottom: -5px;
+}
+
+body 
+{ 
+    background: url(img/school.png) repeat 0 0;
+}
+
+/*hyperlink colors*/
+a:link
+{
+	color: #8B0000;	/*dark red*/
+}
+
+a:visited
+{
+	color: #8B0000;	/*dark red*/
+}
+
+a:hover
+{
+	color: #E9DDC6;	/*background brown*/
+}
+
+/* Background pattern from subtlepatterns.com */
+
+/* END CHANGES HERE */
+  </style>
+  <body>
+    <header>
+	  <hr>
+      <h1 class="ubuntu red negative">CS 1653 Project P5 Writeup</h1>
+	  
+      <h2>
+<!-- BEGIN CHANGES HERE -->
+
+	<p class="ubuntu red negative">Brought to you by three strapping young lads:</p>
+	<p class="ubuntu red left">Adam "💯 💯 💯" Darr</p>
+	<p class="ubuntu red center">John "Won't Compile" Felen</p> 
+	<p class="ubuntu red right">Ryan "McCan't Set His Clock" McDonald</p>
+	<hr  id="navbar">
+	
+<!-- END CHANGES HERE -->
+      </h2>
+      <nav>
+        <a class = "ubuntu navitem" href = "#overview">Overview</a>
+		<a class = "ubuntu navitem" href = "#threat">Threat Model</a>
+        <a class = "ubuntu navitem" href = "#attack1">Attack 1</a>
+		<a class = "ubuntu navitem" href = "#countermeasure1">Countermeasure 1</a>
+        <a class = "ubuntu navitem" href = "#attack2">Attack 2</a>
+		<a class = "ubuntu navitem" href = "#countermeasure2">Countermeasure 2</a>
+        <a class = "ubuntu navitem" href = "#discussion">Discussion</a>
+      </nav>
+    </header>
+    <section id="overview" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Overview</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>In this section, broadly overview your threat model, attacks, and
+countermeasures.</p>
+
+<p>
+For the final phase of the project we added additional layers of security against more publicly(out side of the technology community) attacks.  
+First off, the threat model for our final phase is the same as phase 4's threat model.  
+In very broad stokes the group server is entirely trustworthy, the file server and clients are untrusted, and all communication is being monitored and a live attacker may try to insert, reorder, replay, or modify messages.  
+We also have two attacks this time around.  
+The first attack is a dictionary attack against unsecure passwords.  
+Somebody can easily just try a whole dictionary of passwords against the system since we have left passwords on the back burner until now.  
+Our countermeasure to this attack is to require special characters so that it is more difficult to use a dictionary attack.  
+Also, every IP address only gets 5 password guesses per 15 minutes to slow the dictionary attack down to 1st gear.  
+Our second attack was a DDoS against the group server.  
+This attack is very annoy because not only does it destroy availability but because there are programs that allow even the most novice computer users to accomplish a DoS attack when they have no idea what is actually happening behind the scenes.   
+To mitigate this attack we have implemented hash inversion puzzles.  
+A user will be given one of these puzzles whenever they try to connect to the group server.  
+Solving the puzzle takes time and will slow the amount of request the group server gets.  
+</p>
+
+<!-- END CHANGES HERE -->
+    </section>
+	
+	<section id="threat" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Threat Model</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p><b>Group Server:</b> The group server is entirely trustworthy. In this phase of the project, 
+		this means that the group server will only issue tokens to properly authenticated clients 
+		and will properly enforce the constraints on group creation, deletion, and management specified 
+		in previous phases of the project. The group server is not assumed to share secrets with the file 
+		servers in the system. Additionally, it will be assumed that users will not be trusted to make 
+		their passwords secure.</p>
+
+<p><b>File Servers:</b> In this phase of the project, file servers will be assumed to be largely untrusted. 
+		In particular, file servers might leak files to unauthorized users or attempt to steal user tokens.</p>
+
+<p><b>Client:</b> We will assume that clients are not trustworthy. Specifically, clients may attempt to 
+		obtain tokens that belong to other users and/or modify the tokens issued to them by the group server 
+		to acquire additional permissions.</p>
+
+<p><b>Other Principals:</b> You should assume that all communications in the system might be intercepted by a 
+		active attacker that can insert, reorder, replay, or modify messages.</p>
+
+
+<!-- END CHANGES HERE -->
+    </section>
+    <section id="attack1" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Attack A1: Dictionary Attack Against Insecure Passwords</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>
+In our current implementation users can create their own passwords and set it to be whatever they like so long as their password is not an empty string. Additionally, when logging in there is no timeout for a user entering the wrong password multiple times. 
+Since users are usually not good a choosing secure passwords and there is no timeout for password entry this implementation is vulnerable to a dictionary attack.
+In this attack a malicious user can simply loop through a file of words in the dictionary and hope to find a password that matches their target user.
+For example, a user Bob might set their password to 'password'.
+In this case, a malicious user would easily find their password by looping through a dictionary.
+This represents a threat to our file system since we want our users to feel and be secure.
+Allowing for weak passwords and not having a limit on the number of incorrect passwords entered compromises the security of the users on our file system since it allows for malicious actors to easily brute-force passwords.
+Additionally, the lack of a limit on incorrect passwords allows for illegimate users to constantly send requests and hold up resources, enabling them to easily deny service to legitmate users.
+</p>
+
+<p>
+To prove that this concept could be used against our file system I actually implemented a malicious user interface that performs this attack.
+The code for this attack can be found in MaliciousUserInterface.java.
+To perform the attack, the mallicious user interface loops through a dictionary file containing common words (see: en_US.dic in src).
+During each iteration of the loop the malicious user sends a SHA-256 hash of whatever word it is on in the dictionary file to the GroupThread in hopes of gaining a token.
+The malicious user will keep failing to get a token until the password is guessed correctly and they gain access to the system.
+Additionally, when this happens, a message containing the username and password is printed to the console so the malicious user has that information to use later.
+When testing this program, I created a user named phil with the password 'ABC' and then attempted to brute force it with the dictionary file.
+'ABC' was chosen simply because it was one of the first strings in the dictionary file and looping through the entire file will likely take over 10 minutes.
+The end result was that the malicious user gained access to the system due to the weak nature of the user's password and the inability of the group server to limit the amount of attempts on the password.
+</p>
+<!-- END CHANGES HERE -->
+    </section>
+	<section id="countermeasure1" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Countermeasure C1</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>
+Implementing protections against this attack are fairly trivial. 
+As stated previously, two things must be done prevent this attacks: require users to enter more secure passwords and have a limit on the amount of incorrect passwords that can be entered.
+An implementation of requiring more secure passwords in GroupServer.java is shown below:
+</p>
+
+<pre>
+      // get new user password
+      String password = new String(System.console().readPassword("Enter your password: "));
+
+      boolean passwordLength = false;
+      boolean containsTwoNumbers = false;
+      boolean containsSpecialCharacters = false;
+
+      // extract numbers from password
+      String numbers = password.replaceAll("[*a-zA-Z]", "");
+
+      // check if password length is >= 8
+      passwordLength = (password.length() >= 8);
+
+      // check if string contains two numbers
+      containsTwoNumbers = (numbers.length() >= 2);
+
+      // password contains at least one special character: ] [ ? / < ~ # ! @ $ % ^ & * ( ) + = } | : ; , > {
+      containsSpecialCharacters = ((password.indexOf(']') > -1) || (password.indexOf('[') > -1) || (password.indexOf('?') > -1) || (password.indexOf('/') > -1) || (password.indexOf('<') > -1) || (password.indexOf('~') > -1) || (password.indexOf('#') > -1) || (password.indexOf('!') > -1) || (password.indexOf('@') > -1) || (password.indexOf('$') > -1) || (password.indexOf('%') > -1) || (password.indexOf('^') > -1) || (password.indexOf('&') > -1) || (password.indexOf('*') > -1) || (password.indexOf('(') > -1) || (password.indexOf(')') > -1) || (password.indexOf('+') > -1) || (password.indexOf('=') > -1) || (password.indexOf('}') > -1) || (password.indexOf('|') > -1) || (password.indexOf(':') > -1) || (password.indexOf(';') > -1) || (password.indexOf(',') > -1) || (password.indexOf('>') > -1) || (password.indexOf('{') > -1));
+
+      // keep looping until user enters proper input
+      while(!passwordLength || !containsTwoNumbers || !containsSpecialCharacters) {
+        System.out.println("\nError: Please enter an acceptable password.");
+        System.out.println("Passwords must be at least 8 characters.");
+        System.out.println("Passwords must contain at least two numbers.");
+        System.out.println("Passwords must contain one of the following special characters: ] [ ? / < ~ # ! @ $ % ^ & * ( ) + = } | : ; , > {");
+
+        password = new String(System.console().readPassword("Please enter your password: "));
+
+        passwordLength = (password.length() >= 8);
+
+        numbers = password.replaceAll("[*a-zA-Z]", "");
+        containsTwoNumbers = (numbers.length() >= 2);
+        containsSpecialCharacters = ((password.indexOf(']') > -1) || (password.indexOf('[') > -1) || (password.indexOf('?') > -1) || (password.indexOf('/') > -1) || (password.indexOf('<') > -1) || (password.indexOf('~') > -1) || (password.indexOf('#') > -1) || (password.indexOf('!') > -1) || (password.indexOf('@') > -1) || (password.indexOf('$') > -1) || (password.indexOf('%') > -1) || (password.indexOf('^') > -1) || (password.indexOf('&') > -1) || (password.indexOf('*') > -1) || (password.indexOf('(') > -1) || (password.indexOf(')') > -1) || (password.indexOf('+') > -1) || (password.indexOf('=') > -1) || (password.indexOf('}') > -1) || (password.indexOf('|') > -1) || (password.indexOf(':') > -1) || (password.indexOf(';') > -1) || (password.indexOf(',') > -1) || (password.indexOf('>') > -1) || (password.indexOf('{') > -1));
+      }
+</pre>
+
+<p>
+This is not implemented in our project since we want the MaliciousUserInterface.java attack to work. 
+This implementation requires users to enter a password that contains at least two numbers, that the password is at least 8 characters in length, and that the password contains any of these special characters: ] [ ? / < ~ # ! @ $ % ^ & * ( ) + = } | : ; , > {. 
+This, however, won't be sufficient for MyGroupClient.java since currently all of our checks and hashing are done by the group client and then sent to the group server. 
+If we don't trust our clients at all then they could potentially modify this to create users with insecure passwords.
+It seems unlikely that users would want to do this but one solution would be to have the group client send the password and the hashed password to the group thread.
+These messages are already encrypted with the session key using AES-256 and the user already sends the hashed password which could be used to gain access anyway if an attacker broke the encryption.
+The group thread could then use the checks detailed above to ensure that the password specified meets the requirements.
+If the user gives a good password then everything goes normally whereas if they do not the group thread will send an envelope back to the client telling them they need to enter a more secure password.
+</p>
+
+<p>
+Finally, we need timeouts for users attempting to enter more than five passwords. This could be performed by adding a file that keeps track of how many times an IP address has sent a GET request to the group thread. This would work by keeping records in a text file of IP addresses, the amount of failed GET requests they've sent, and a timestamp of when they sent their last GET request. Every time a user sends a GET request these details would be recorded and checked by the group thread. If the timestamp is more than 15 minutes old then the count of failed GET requests will be reset. This will allow a user to send five failed GET requests (ie. wrong passwords) every 15 minutes.
+</p>
+
+<p>
+This mechanism is sufficient for mitigating this attack since it a) requires more secure user passwords and b) implements a timeout for failed entries per IP address. Thus if an attacker were to attempt to perform a dictionary attack they would only have 5 tries per 15 minutes per IP address. Furthermore, the addition of special characters and numbers as well as the required length of passwords makes the dictionary needed much larger. The combination of these two factors would make it fairly infeasible for someone to simply attempt to brute-force the system due to the limited number of password attempts and the more secure nature of the passwords themselves.
+</p>
+
+<!-- END CHANGES HERE -->
+
+    </section>
+    <section id="attack2" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Attack A2: Distributed Denial of Service</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>Back in the good ‘ol days of the 1990’s, Denial of Service (DoS) and Distributed Denial of Service (DDoS) 
+		attacks weren’t very much of a concern as many users were still discovering the wonders of the internet.  
+		Today, the internet is vastly imbedded in the daily lives of almost everybody creating the necessity for 
+		many servers to have stable uptime availability as users are frequently requesting data.</p>
+		
+<p>Shifting toward the present, DoS attacks have become much more popular as they are easy to initiate (can 
+		conduct through Botnet services in the case of DDoS attacks), look practically no different from normal 
+		traffic and many instances of traditional security in place is not readily designed to handle massive 
+		DoS/DDoS attacks.</p>
+		
+<p>Applying this concept of a very devastating threat to our Group-Based File Sharing Network, there are currently 
+		no protocols in place that limit a client’s number of attempts to authenticate when attempting to gain access 
+		to the network.  <a href = "#attack1">Attack 1</a> takes this threat into consideration by acknowledging the 
+		fact that our current implementation had no boundaries on the number of attempts a password could be entered 
+		through the application of a dictionary attack.  With the <a href = "#countermeasure1">counter measure</a> for 
+		this threat in place, there is still potential for a malicious user or multiple malicious users to have free 
+		reign to flood the server with connection requests due to the expectations that the server is available all the 
+		time and will be accepting all requests to obtain a token indescriminantly.  This will obviously takes its toll 
+		on the computational resources that the server has at its disposal which could lead to slower communication 
+		between the server and its clients or even cause the server to be unavailable to its intended users.  This would 
+		lead to unhappy clients and could ultimately cause our clients to leave our file sharing server behind and move 
+		on to the next group’s file sharing server. </p>
+		
+<p>To be more specific, should a large number of requests pour into the server at a given time, this will slow the server’s 
+		response time.  To exemplify this problematic idea the java file: <b>MaliciousUI_DOS.java</b> provides a naively executed 
+		DOS attack against a Group Server of the user’s choice (they specify the IP address and Port number).  The program 
+		then continually spawns new threads.  Each thread connects to the specified server and attempts communications (in 
+		this small example, it attempts to receive a UserToken 100 times).  Ultimately this could be done much more 
+		efficiently in practice, but this was able to suffice.  While running this program and trying to connect to the Group 
+		Server from a non-malicious client (which was being overwhelmed by this malicious client), there were noticeable delays 
+		and the delays only got worse when attempting to receive information from the Group Server (such as requesting a Token).  
+		There were also times where the Group Server would refuse the connection of the non-malicious client as it was being 
+		overwhelmed by the malicious client’s requests.</p>
+		
+<p>Taking this one step further, if this program were to be distributed across a network of malicious users, a multitude of 
+		requests could pour into the Group Thread and further complicate the matter.  This DDoS attack could then render 
+		the Group Server incapable of accommodating all of its casual client’s requests.</p>
+
+<!-- END CHANGES HERE -->
+
+    </section>
+	<section id="countermeasure2" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Countermeasure C2</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>When considering the idea of attacks coming from any and all directions, there isn’t really much that can be done in 
+		terms of hiding from the danger.  Rather than limiting the capabilities of the Group Server hiding within a 
+		private network, we want the Group Server to be available anywhere.  Thus, instead of running from adversaries 
+		and trying to hide, in order to mitigate such an unavoidable threat this countermeasure aims to face it head on.  
+		Ensuring that any client attempting to connect to the Group Server must <q>pay a price</q> for their GET request, 
+		we thought it be best to offload a puzzle to the requesting client which they must solve in order to establish 
+		a connection successfully before any subsequent requests can be made.</p>
+		
+<p>The concept of this puzzle will impose the following repercussions:
+	<UL>
+		<LI>Every client must <q>pay</q> for their request by putting forth the effort to solve a puzzle.  This payment 
+				will be in CPU cycles.</LI>
+		<LI>The puzzle will be simple for the Server to generate.</LI>
+		<LI>The puzzle will be difficult for the Client to solve but will still be computationally feasible within 
+				a short amount of time.</LI>
+		<LI>The puzzle will be simple for the Server to verify.</LI>
+	</UL>
+</p>
+
+<p>Looking at the design specifications, we will employ a <b>Hash Inversion Puzzle</b>.   With this hash inversion puzzle, 
+		any client who sends a GET request to the Group Server and successfully reaches the server will cause a Thread 
+		to be generated to handle communications between the Server and the Client.  For this countermeasure to work, once 
+		this connection is established, the GroupThread will generate a random number, R, of size N.  The GroupThread will 
+		then compute a SHA-256 Hash of that random number (H(R)).  Once the Group Server has all of these values, it will 
+		then send the size of the random number (N) and the hash of the number ( H(R) )  to the GroupClient as a puzzle for 
+		them to solve.  Additionally, the GroupThread will take note of the time which the puzzle will be sent.  This time 
+		will be used to ensure that the GroupClient responds within a reasonable time limit so that the connection can be 
+		closed if it is a malicious client who's intention is to burn the Servers resources by keeping the connection open.
+</p>
+
+<p>Once the GroupClient receives this puzzle (number N and Hash H(R) ) it will then be forced to  exhaustively figure out 
+		the puzzle should they want the connection to remain intact.  The GroupClient will have to generate the lowest 
+		possible number, X, of size N, compute the Hash of that number, H(X),  and then check if H(R) = H(X).  Once 
+		the GroupClient is able to compute a matching Hash, it will then know which number, R, the GroupServer generated 
+		initially.
+</p>
+
+<p>When the GroupClient has successfully computed R, it will then have to respond to the server by sending R to the 
+		GroupServer.  The GroupThread will in charge of the connection will receive R and then verify that the number that 
+		it received is the same as the number the that the GroupThread  generated initially.  If they are the same, the 
+		GroupServer will allow the connection to remain.  If it is not the same, the connection will be closed and the 
+		connection will be terminated.  As mentioned earlier, the connection will also be closed if the GroupClient takes 
+		too long to respond.
+</p>
+
+<h3>Hash Inversion Puzzle Protocol</h3>
+<center><img src = "img/DOS_puzzle.jpg"></center>
+<center><p>The protocol diargram above demonstrates this countermeasure conceptually.</p></center>
+
+<p>In terms of implementing this countermeasure in our application, the entirety of this protocol has been implemented 
+		with the exception of the time stamp.  Currently, in <b>GroupThread.java</b>  as soon as a connection is established 
+		with the Client, the Thread will generate a random number of 7 digits (since that's what Ryan's computer could handle 
+		in a timely manner) and send the length and a Hash of the number to the Client.  <b>Client.java</b> will be waiting 
+		to accept this message within its connect() method.  Once it receives these values, it will then begin exhaustively 
+		calculating the SHA-256 hash value of every number of that specified length.  Once the appropriate number is found 
+		it will send this number back to GroupThread.java.  The number will then be verified to make sure it was the number 
+		which the Server generated.  Once verified, the Client can then proceed to send requests.
+</p>
+
+<p>One other addition to this protocol would be the potential to store the IP of requestors for a limited amount of time.  
+		If the requestor exceeds a set number of GET requests, then the GroupServer could simply expel them from sending 
+		anymore GET requests for a set number of time (such as a day).  This was also briefly touched upon in the previous 
+		countermeasure.
+</p>
+
+<p>With this countermeasure in place, any Client attempting to connect to the GroupServer will have to be willing to pay 
+		for their connection if they want to remain connected.  This will deter malicious users from wanting to spam the 
+		server as it will now require them to do work if they want the connection to remain.  Even if the malicious Client 
+		simply aimed to keep sending GET requests and not bother with the extra computations, the connection will then be 
+		closed after just a short while so the Server can continue to process the requests of relevant non-malicious users.
+</p>
+
+<p>To ensure that this protocol design does not inconvenience users to a large degree, all of the puzzle solving will take 
+		place behind the curtains of what the user will see.  The GroupClient.java program will perform the puzzle solving 
+		as opposed to any Client Interfaces doing the puzzle solving.  It may cause a miniscule delay in connection speed 
+		but the user will not see what is going on.
+
+<p>Lastly, none of these messages are encrypted since this protocol occurs at the moment the communication is established 
+		between the Client and the Server.  Since no other parties gain anything from the information they may receive 
+		from this series of messages, there is no need for the messages to be encrypted as it is merely a toll that a 
+		Client must pay.
+</p>
+
+
+<!-- END CHANGES HERE -->
+
+    </section>
+    <section id="discussion" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Discussion</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>
+We used the same threat model from phase 4 of the project.  
+The threat model is not that realistic because in reality we probably should have all servers, including the group server, untrusted.  
+However, we did attack the group server in other ways.  
+The two ways were trying to brute force the password and doing a DoS attack against the group server.  
+To protect against these attacks we choose to limit incorrect password guesses and computational puzzles, respectively.  
+We actually wanted to have a third attack that would be attacking the data integrity of the group server.  
+To our dismay if we did not fully trust the file server most, if not all, of our code would then become unsecure, or atleast not as secure.  
+Below is the lost third attack write-up straight from the scraps off the drawing table: 
+</p>
+
+<p><i>"In this attack data integrity of the group server may be in jeopardy.  
+The data is not secured in anyway other than being hidden by the location of the server being hidden.  
+With current technology and social engineering, some of our admins may accidentally leak the location of the group server.  
+If a malicious user was able to physically find the location of the server they will be able to edit the files like "UserList.bin".  
+This attack is possible because "UserList.bin" is just a file on the server and with enough snooping through directories they will be able to find it.  
+If they edited these files they would then be able to change their token to allow them into any group and the servers would be none the wiser.  
+Because this attack is a physical attack and will probably incorporate social engineering we could not write a program to demonstrate the attack."
+</i></p>
+
+<!--Explaining why our countermeasures do not effect the previous threats and a bit of summary of the whole project-->
+<p>
+Thankfully our two countermeasures for this attack did not mess up any of the previous 7 threats from hell.  
+The first 4 threats were introduced to us in phase 3 of the project.  
+Threat T1: Unauthorized Token Issuance was about not giving the incorrect token to a user.  
+We did not touch the EKE protocol so if a user successfully complete the protocol then they would get their, and only their, token.  
+In Threat T2: Token Modification/Forgery we had to protect from a untrusted user modify their token to get into groups they were not actually in.  
+We implemented RSA signatures with a SHA-256 hash that was done by the group server with its private key.  
+Since the token signature code was not touched and is only issued when Threat 1 proves that the user is who they say they are, Threat 2 is still valid.  
+Then Threat T3: Unauthorized File Servers came along for some fisticuffs and wanted to steal the identities of non-malicious file servers.  
+We did not touch the file server code so we are safe from it fighting again.  
+The first time that a user would try to connect to a file server the file server would give out its 4096-bit RSA fingerprint.  
+This fingerprint will allow a user to authenticate that the server is server <i>s</i> and not server <i>s'</i>.  
+Moreover Threat T4: information Leakage via Passive Monitoring joined the fight.  
+If we had a passive monitor, it would not matter because all our messages between a server and a client are encrypted with a shared 256-bit AES key that are securely shared with our EKE and pseudo-signed Diffie-Hellman on the group server and file server, respectively.  
+</p>
+
+<p>
+Just when we thought we secured our system 3 more threats came out of hiding.  
+Threat T4's older brother, Threat T5: Message Reorder, Replay, or Modification, was our next client and it wanted to mess with the ordering of our messages.  
+We then added SHA-256 HMACs on each message to protect the encrypted messages between server and client with a second shared 256-bit AES key, free of charge.  
+Also, we shared challenges, secured with the first shared 256-bit AES key, that would act as counters to make sure that messages could not be reordered.  
+Threat T6: File Leakage was a real brute and would allow rogue file servers to share unsecured files with users that should not have access to those files.  
+We added one unique 128-bit AES key per file.  
+Ergo, if a rogue file server released these files users that were not part of the group that owned the file would have to crack the 128-bit AES key.  
+Last but not least, Threat T7: Token Theft came to play and would allow file servers to "steal" token's off users and then use them to access other file servers.  
+We said no and gave Threat T7 the old-fashioned five point palm exploding heart technique.  
+Before a user would try to access a file server they must ask the group server to give them a token that would have the file server's RSA fingerprint, signed of course courtesy of Threat 2.  
+Now if a file server "stole" a token and tried to access files on another server the other server would see that the RSA fingerprint does not match its own and would reject the token.  
+</p>
+
+<p>
+In the fifth and final phase we had two new attacks against our system.  
+Attack A1: Dictionary Attack Against Insecure Passwords tried to use a dictionary to keep guessing and log into other user accounts.  
+Since this attack is just against the group server login system, we simply made users have to have more secure passwords, with special characters, and limited the amount of guesses from unlimited to five passwords.  
+Attack A2: Distributed Denial of Service is to crash our group server which in turn would crash the whole system.  
+We then implemented hash inversion puzzles to make it time/CPU consuming for a client attempting to connect to the group server.  
+These two attacks were at the very beginning of using the group file sharing system.  
+</p>
+
+<p>For our final hurrah we went above and beyond.  
+For Attack A1 we had a program that would use a dictionary attack to guess user passwords.  
+When then coded Countermeasure C1 that would make users pick more secure passwords and not allow more than 5 password guesses per 15 minutes per IP address.  
+We also made a small DoS program that would crash the group server by drowning it in phony connection attempts.  
+These phoney connection attempts were prevented in our implemented Countermeasure C2 code that made users that attempted to connect to the file server indure and solve a hash inversion puzzle.  
+</p>
+
+<!-- END CHANGES HERE -->
+    </section>
+	
+	<hr>
+	<p class="red" align="center"> Fin: CS 1653 Project P5 Writeup </p>
+	<hr>
+  </body>
+</html>
+

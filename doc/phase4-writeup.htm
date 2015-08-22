@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>CS 1653 Project P4 Writeup</title>
+  <link href="http://fonts.googleapis.com/css?family=Ubuntu:bold" rel="stylesheet" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=Vollkorn" rel="stylesheet" type="text/css">
+  <link href="img/lock.ico" rel="shortcut icon" type="image/x-icon" />	<!--favicon-->
+
+
+  <style>
+/* BEGIN CHANGES HERE */
+
+/* In this section, you may add CSS styling if desired */
+sup	/*for exponent to be a smaller size*/
+{
+    vertical-align: super;
+    font-size: x-small;
+}
+	
+hr
+{
+	border-color:#8B0000;
+}
+
+header 
+{
+	text-align: center;
+}
+
+.section 
+{
+	border: 2px solid black;
+	border-radius: 10px;
+	border-color: #8B0000;
+	padding:10px;
+	margin-left:15%;
+	margin-right:15%;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	background-color: white;
+}
+
+nav 
+{
+	margin-bottom:15px;	
+}
+
+.navitem	/*navbar color*/ 
+{	
+	border: 2px solid black;
+	border-radius:8px;
+	border-color: #8B0000;
+	font-size:18px;
+	padding:4px;
+	margin-right:5px;
+	margin-bottom:5px;
+	text-decoration: none;
+	color: #8B0000;
+}
+
+.navitem:hover	/*hover color to be opposite*/ 
+{	
+	border-color:#8B0000;
+	background-color:#8B0000;
+	color:#E9DDC6;
+}
+
+img	/*centers image*/
+{	
+	max-width: 100%;
+}
+
+.ubuntu	/*ubuntu font*/
+{
+	font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+}
+
+.red
+{
+	color: #8B0000;
+}
+
+p	/*all paragraph tags will be the same*/
+{
+	color: #3C3C3C;	/*Gray*/
+	font-family: 'Vollkorn', Georgia, Times, serif;
+}
+
+.left
+{
+	float:left;
+	text-align:left;
+    width:18.33333%;
+	margin-left:15%;
+}
+
+.center
+{
+	float: left;
+    text-align:center;
+    width:33.33333%;
+}
+
+.right
+{
+	float: left;
+    text-align:right;
+    width:18.33333%;
+	margin-right:15%;
+}
+
+.negative	/*negative bottom margin*/
+{
+	margin-bottom: -5px;
+}
+
+body 
+{ 
+    background: url(img/school.png) repeat 0 0;
+}
+
+/*hyperlink colors*/
+a:link
+{
+	color: #8B0000;	/*dark red*/
+}
+
+a:visited
+{
+	color: #8B0000;	/*dark red*/
+}
+
+a:hover
+{
+	color: #E9DDC6;	/*background brown*/
+}
+
+/* Background pattern from subtlepatterns.com */
+
+/* END CHANGES HERE */
+  </style>
+  <body>
+    <header>
+	  <hr>
+      <h1 class="ubuntu red negative">CS 1653 Project P4 Writeup</h1>
+	  
+      <h2>
+<!-- BEGIN CHANGES HERE -->
+
+	<p class="ubuntu red negative">Brought to you by three strapping young lads:</p>
+	<p class="ubuntu red left">Adam "Gucci" Darr</p>
+	<p class="ubuntu red center">John "Got No Text Game" Felen</p> 
+	<p class="ubuntu red right">Ryan "McCan't Commit" McDonald</p>
+	<hr  id="navbar">
+	
+<!-- END CHANGES HERE -->
+      </h2>
+      <nav>
+        <a class = "ubuntu navitem" href = "#overview">Overview</a>
+        <a class = "ubuntu navitem" href = "#threat5">Threat 5</a>
+        <a class = "ubuntu navitem" href = "#threat6">Threat 6</a>
+        <a class = "ubuntu navitem" href = "#threat7">Threat 7</a>
+        <a class = "ubuntu navitem" href = "#discussion">Discussion</a>
+      </nav>
+    </header>
+    <section id="overview" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Overview</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<!--Little bit of beatles lyric referencing to start and end the Overview-->
+<p><i>"Let me take you down, cos I'm going to talk about phase 4."</i></p>
+<p>For phase 4, we added a myriad of new cryptographic techniques.  
+We got a double wammy of new techniques in threat 5.  
+First off we use HMACs with a SHA-256 hash and an AES key to prove that no messages have be modified.  
+We are still using encrypted key exchange for group client/thread communication.  
+However, we updated McCan't Commit's handshake protocol for file client/thread to use an adaptation of signed Diffie-Hellman key exchange.  
+Both of these communications also use counters, derived from challenges, to prevent message reorder and replay attacks.  
+Threat 6 then comes up to make sure that no rogue file server can read files stored on it or anyone who is not currently in the group read the files.  
+We prevent this unwanted file reading by using a different AES key to encrypt each file.  
+Last but certainly not least, is threat 7.  
+Threat 7 prevents any rogue file server from "stealing" a token and using it to access files on a different file server.  
+It does this by having the client request a new token that has the RSA fingerprint of the file server they wish to communicate with.  
+Even if that file server "steals" the token, it can only <b>try</b> to access the encrypted files, which are encrypted courtesy of threat 6.  
+</p><p><i>We hope you will enjoy the show."</i></p>
+
+<!-- END CHANGES HERE -->
+    </section>
+    <section id="threat5" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Threat T5: Message Reorder, Replay, or Modification</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>Threat T5 refers to the ability of an attacker to replay, reorder, or otherwise modify messages sent from the client to either the group server or file server and vice-versa. A replay attack refers to an active attacker who attempts to capture data being sent over the network in order to use (or replay) it at a later point in time. As an example, an attacker could intercept a message which tells the server to remove a user from a certain group. The user could later be re-added to the group but an attacker could replay the intercepted message to once again remove the user from the group. Similarly, an attacker could intercept all the messages being sent to the server, reorder them, and then send them in a modified order. Both of these attacks, as well as any such modification to messages sent on our network will have disastrous effects on integrity, usability, and functionality. Additionally, any malicious attack such as the ones above must be dealt with in order for users to have any trust in our system.
+</p>
+
+<p><p>To protect the integrity of the messages sent on our network we will employ a mechanism for message authentication. The mechanism employed will be a keyed cryptographic hash function (or MAC). Specifically, we will use HMAC-SHA256. </p>
+
+<h3>Group Server Handshake</h3>
+<center><img src = "img/EKEwIntegrityKey.jpg"></center>
+<p>For the group server, the HMAC will use the SHA-256 hash of the shared secret obtained from the essentially doing the EKE protocol again, once to derive a session key as was used in the last phase and once to derive an integrity key. The session key will be used for encrypting communications while the integrity key will be used for the HMAC function. The revised protocol is pictured above.</p>
+
+<h3>File Server Handshake</h3>
+<center><img src = "img/fileProtocol.jpg"></center>
+<p>For the file server, we will also revise our initial handshake to generate an integrity key and prevent replay attacks. The protocol is pictured above. The client first sends an AES-128 key encrypted with the RSA-4096 server public key. This AES-128 key will be used to encrypt communications between FileThread and FileClient. For the user to prove his or her identity they will also send an encrypted token. Additionally, the client and server will do a pseudo-signed Diffie-Hellman key exchange which is eventually hashed with SHA-256 to derive the integrity key. Furthermore, challenges are sent between client and server to confirm both have the keys.  These challenges will then become the session counter to help prevent replay and reordering attacks.  </p>
+
+<p>For every message exchanged over our network, we will take an HMAC of the message data concatenated concatenated with the session number. This HMAC will then be added to the end of our envelope which is then encrypted into a SealedObject with AES-256 (using the session key) and sent over the network. At this point whoever is receiving the HMAC can compute their own HMAC and compare it to check its validity. Additionally, the session numbers are used to prevent replay or reorder attacks. Essentially, these session numbers will be counters by which the GroupThread and GroupClient (as well as the FileThread and FileClient) both independently keep track of the messages sent during the exchange. If these numbers don’t match up, then there is a problem and the potential that a replay or reorder attack is being carried out. As such, the respective clients and threads will not allow communications whose sequence numbers do not match up (ie. the HMACs don’t match up). To add an extra element of randomness, in the GroupClient and GroupThread the sequence number will be initialized to the first challenge sent by the server in EKE. Similarly, in the FileClient and FileThread the sequence number will also be initialized to the first challenge sent by the server during authentication. These sequence numbers will be implemented as BigIntegers so there should be no expectation that they will ever overflow. Additionally, these numbers are refreshed during each session since they are derived from the challenges sent during the handshake at the beginning of the connection.
+</p>
+
+<p>This mechanism should sufficiently address message reorder, replay, and modification. As stated above, sequence numbers will prevent message reorder and replay attacks by detecting if the messages sent are in sequence with the respective client or server. This adds to the overall security of the system since replay or reorder attacks will be easily detected with the addition of this simple counter. Furthermore, the attacker should never be able to derive the session number (ie. they could decrypt the first challenge sent by the server) since these are derived from the Diffie-Hellman key exchange. The correctness of this approach can also be verified, since the counters will be initialized to the challenges that have already been used to authenticate either the server or client. Therefore, if both the server and client increment their counters for each message received, the approach should work. Furthermore, the correctness of computing and comparing HMACs is confirmed by the assumption that HMACs are cryptographically strong and have not been broken. HMACing the message concatonated with the session number perserves the integrity and security of the messages sent on our system due to this fact. Hence it should be infeasible for an attacker to find a message that hashes to the same HMAC value.</p>
+
+<!-- END CHANGES HERE -->
+    </section>
+    <section id="threat6" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Threat T6: File Leakage</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>Threat T6 considers the current insecurity of how raw files are housed on any file 
+		server within the file-sharing system.  Currently, when files are transferred between 
+		the file client and file server, they will be encrypted across the channel via a shared 
+		128-bit secret AES key as to fend off peering eyes.  Additionally, a challenge is sent from 
+		the client to the server to help verify to the client that they are, in-fact, connecting 
+		to the file server requested.  While this does help to verify that a file in transit is 
+		going where one wants it to go, it does not account for the untrustworthiness of a file 
+		server nor the possibility of files being leaked to unauthorized principals.  Should an 
+		unauthorized party gain access to a particular file server, there is nothing stopping them 
+		from viewing any files currently housed on the system.  Thus, the possibility of file 
+		leakage becomes a substantial burden when we want files to only be readable by members of 
+		the appropriate group.
+</p>
+
+<p>To combat this threat, our hopes will rely heavily on the assumptions placed on the group server 
+		in that it is entirely trustworthy.  In order to utilize the trustworthiness of the group 
+		server, we will have it house a Hashtable&lt;K,V&gt; where the key, K, will be the group name and 
+		the value, V, will be an ArrayList of an object containing a specific file name, file server,
+		and a unique 128-bit secret AES key which will be used to encrypt files before they are sent 
+		to the file server and decrypt such encrypted files upon download.  Thus, some groups may be 
+		housing multiple AES keys based on the number of files they have uploaded and the number of 
+		file servers with which they’ve uploaded/downloaded to/from (to avoid file servers having 
+		the same AES keys).  <br/>
+		<t/>Hashtable&lt;String group, ArrayList&lt;FileEncrypt&gt; files&gt; KeyTable
+</p>
+
+<p>Key’s will be added to the Hashtable as groups are created and will be deleted as groups are 
+		deleted within the group server.  This will essentially give each group its own unique 
+		entry within the Hashtable.  Once that is taken care of on the group server end, whenever 
+		a user connects to a file server and they attempt to upload or download a file, they must 
+		supply a group to which to upload to or download from.  Essentially, if they truly are a 
+		member of said group, then they will have the right to perform the action.  Thus, when 
+		the client wants to upload a file or download a file, they must first communicate with the 
+		Group Server to obtain a 128-bit AES key.
+</p>
+
+<p>Assuming a user is a member of said group, the Group Server will be tasked with doing one of 
+		the following after the client establishes communication with the Group Server: <br/>
+		<UL>
+			<LI>Group does not have AES key for specific file (upload): AES key will be created, 
+					stored within the HashTable and used to encypt that file.  Thus it will be 
+					supplied to the client so that they may perform the encrypt.
+			<LI>Group does have AES key for specific file (download): AES key will be given to client 
+					to decrypt the file.
+		</UL>
+</p>
+
+<p>At this point, the client now has an encryption key and can begin encrypting chunks of the file 
+		with that key.  The client can send those encrypted chunks across to the File Server (through 
+		an already secure channel with which all communications are encrypted).  Thus, when the 
+		File Server receives all of the chunks, the file will be contained on the File Server in an 
+		encrypted state.
+</p>
+
+<p>Below is a pictorial view of what is described above.  Sorry that it's hand-drawn :( </p>
+<p><center><img src = "img/t6ghetto.jpg"></center></p>
+
+<p>With this mechanism in place, the client will be able to encrypt files and send them to be housed 
+		on the file server of their choosing and can only be decrypted by others who are a part of 
+		the group and know of this file server.  The file server will no longer house the raw data 
+		for any malicious (or any casual) users to view.  Should there be attempts at viewing or 
+		stealing the file, it will be necessary to have knowledge that only the Group Server 
+		possesses and manages.  Since the group server is entirely trustworthy, we can bank on 
+		such malicious intent to be thwarted.  Thus, we can be confident that the sharing and storage 
+		of all files is safe and because every file has their own key, if a user is kicked out of a 
+		group, they will have no knowledge pertaining to any new keys generated for that group.
+</p>
+
+<!-- END CHANGES HERE -->
+    </section>
+    <section id="threat7" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Threat T7: Token Theft</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>Threat 7 will piggy back off of threat 2 and threat 3.  
+This time, a new byte array variable will be inside of the Token.  
+This byte array will be holding the public key of a specific file server.  
+Therefore, each user will have a different Token for each file server.
+The group server will still not have to know every file server because the client will have to authenticate the file server first, which is done in threat 3, and then through the use of Sealed Objects(Encrypted Envelopes), the group server will get the public 1024-bit RSA key of the authenticated file server from the middle man known as the client.
+</p>
+
+<p>Everything in threat 2 still is true.  
+The Token is signed by the group server using a SHA256 hash and the group server's 1024-bit RSA private key.
+The group server's public 1024-bit RSA key is still manually uploaded onto the file server machine at startup.  
+Forging a Token will just cause an error with verifying the signature and no access is given to the client.  
+For a reminder, the image below is how Threat 2 worked.  
+Remember, the silver key was the group server's private 1024-bit RSA key and the golden key was the group server's public 1024-bit RSA key.  
+Moreover, Bill(red sweater) was the group server, in our case, and the the orderer(green suit) was the client, in our case.  
+Additionally, for Threat 7, when the client requests their Token they must hand over the public 1024-bit RSA key of the file server that they with to connect to.
+</p>
+
+<center><img src = "img/signature.png"></img></center>
+
+<p>Every time a client wishes to do something of the file server, the file server will obtain the client's token.  
+The file server will check if that token's 1024-bit file server RSA public matches its own on board 1024-bit RSA public key.  
+If the match works then the file server will also check to verify the signature, which is signed from the group server with its 1024-bit private RSA key.  
+If both of those checks return true, the file server can be assured that the client is true to their word and that the token has not been "stolen" by another file server.  
+</p>
+
+<p>If the file server decides to "steal" the token from the the client it will not allow the file server to access any other files on other file servers.  
+The public 1024-bit RSA key in the token will only match the file server that "stole" the token.  
+Even if the file server successfully modified the group server's public 1024-bit RSA key, the signature, in the form of a byte array, in the token would not match.  
+Futhermore, the file server does not have the group server's private 1024-bit RSA key, so the signature cannot be forged.
+Now you may be wondering: what if the file server just changed the saved group server's public 1024-bit RSA key?  
+Frankly, it does not matter because other file servers will still have the unchanged public 1024-bit RSA key of the group server.  
+The file server is trapped with a "stolen" Token that cannot access any files on any other file server, other than itself.
+</p>
+
+<p>
+
+<!-- END CHANGES HERE -->
+
+    </section>
+    <section id="discussion" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Discussion</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>
+For phase 4 we used many common cryptographic techniques to buff up our chat server.  
+Threat 5 is to protect messages from reorder, replay, or modification.  
+In threat 5, the group server still uses encrypted key exchange to create two shared secrets.  
+The first shared secret is just to have a AES session key that allows quick, but secure communication.  
+The second shared secret is to compute the HMAC, which is new to this phase.  
+The HMAC(with SHA-256) is used to check if any message has been altered from when it was sent to when it was received.  
+Both the file server and group server use an HMAC to check message integrity.  
+New in this phase of the project is the file server handshake protocol based on signed Diffie-Hellman.  
+This new protocol allows the file server and file client to get two shared keys, which are used in the same vein as the group server: one is to encrypt messages and the other is to compute a HMAC.  
+Threat 5 will also give challenges to each other, which creates a counter variable.  
+The counter variable will allow both the client and server to be on the same page for which message they are on.  
+If their counters do not match up then they cease to talk.  
+</p>
+
+<p>
+Threat 6 is to protect files on a rogue server from being readable, if released, from the public, the file server, and from previous members of a group reading any updates to them.  
+We accomplish this by having a hashtable of &lt;String group, ArrayList&lt;FileEncrypt&gt; files&gt;.  
+The group is obviously the group for which the keys are associated with and the ArrayList holds FileEncrypt, a class that has variables like the AES key for the file, and for which file it is associated with.  
+If the files are leaked, nobody will be able to access them unless the are part of the group.  
+Since every new file gets a new AES key it would take a very long time to break the encryption.  
+Threat 7 just simply adds the file server's RSA public key to the token for authentication.  
+The token is still signed by the group server and the file server cannot use that token to access any of its peer file servers because the "stolen" token does not have the correct file server RSA public key.  
+For the most part, most of our original ideas were broadly correct for defending against these threats.  
+We realized that some of the handshake code for Threat 3 was not going to work for this phase of the project.  
+Threat 7 would not be able to get the file server's public key but we worked around that by creating an instance of the file client first to get the information and then allowing that instance to become the real file client.  
+Also, the file server had no way, such as AES keys, to communicate and produce HMACs.  
+Luckily, that was solved by just making a more rigorous hand shake, based on signed Diffie-Hellman.   
+</p>
+
+<p>Threats 1 through 4 are still up to snuff in phase 4 of the project.  
+Threat 5 actually builds on threat 1.  
+Threat 1 still authenticates the client to the group server through encrypted key exchange and the client only gets their token, not anyone else's.
+Just like above, threat 7 is integrated into threat 2 because tokens are still only given out and signed, with the group server's RSA private key, by the group server.  
+The new and improved token also can now store a file server public RSA key, courtesy of threat 7, and is re-signed by the group server.
+That file server public RSA key is still helping clients know that they are connecting to server <i>s</i> and not <i>s'</i> that threat 3 been tasked to protect.
+Finally, threat 4 is has actually been edited for threat 7 and threat 5 to work.  
+The client can now obtain the file server's public key and send it to the group server to then obtain a token that will only work on that specific file server.  
+Both the group server and file server have a safe and encrypted way to obtain two shared secrets(AES keys) to send messages to and from each other.  
+Threat 5 actually gave threat 4 an update in security with a key exchanged based signed Diffie-Hellman.  
+</p>
+
+<p>We were not able to do any extra credit.</p>
+
+<!-- END CHANGES HERE -->
+    </section>
+	
+	<hr>
+	<p class="red" align="center"> Fin: CS 1653 Project P4 Writeup </p>
+	<hr>
+  </body>
+</html>
+

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>CS 1653 Project P3 Writeup</title>
+  <link href="http://fonts.googleapis.com/css?family=Ubuntu:bold" rel="stylesheet" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=Vollkorn" rel="stylesheet" type="text/css">
+  <link href="img/lock.ico" rel="shortcut icon" type="image/x-icon" />	<!--favicon-->
+
+
+  <style>
+/* BEGIN CHANGES HERE */
+
+/* In this section, you may add CSS styling if desired */
+sup	/*for exponent to be a smaller size*/
+{
+    vertical-align: super;
+    font-size: x-small;
+}
+	
+hr
+{
+	border-color:#8B0000;
+}
+
+header 
+{
+	text-align: center;
+}
+
+.section 
+{
+	border: 2px solid black;
+	border-radius: 10px;
+	border-color: #8B0000;
+	padding:10px;
+	margin-left:15%;
+	margin-right:15%;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	background-color: white;
+}
+
+nav 
+{
+	margin-bottom:15px;	
+}
+
+.navitem	/*navbar color*/ 
+{	
+	border: 2px solid black;
+	border-radius:8px;
+	border-color: #8B0000;
+	font-size:18px;
+	padding:4px;
+	margin-right:5px;
+	margin-bottom:5px;
+	text-decoration: none;
+	color: #8B0000;
+}
+
+.navitem:hover	/*hover color to be opposite*/ 
+{	
+	border-color:#8B0000;
+	background-color:#8B0000;
+	color:#E9DDC6;
+}
+
+img	/*centers image*/
+{	
+	max-width: 100%;
+}
+
+.ubuntu	/*ubuntu font*/
+{
+	font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+}
+
+.red
+{
+	color: #8B0000;
+}
+
+p	/*all paragraph tags will be the same*/
+{
+	color: #3C3C3C;	/*Gray*/
+	font-family: 'Vollkorn', Georgia, Times, serif;
+}
+
+.left
+{
+	float:left;
+	text-align:left;
+    width:18.33333%;
+	margin-left:15%;
+}
+
+.center
+{
+	float: left;
+    text-align:center;
+    width:33.33333%;
+}
+
+.right
+{
+	float: left;
+    text-align:right;
+    width:18.33333%;
+	margin-right:15%;
+}
+
+.negative	/*negative bottom margin*/
+{
+	margin-bottom: -5px;
+}
+
+body 
+{ 
+    background: url(img/school.png) repeat 0 0;
+}
+
+/*hyperlink colors*/
+a:link
+{
+	color: #8B0000;	/*dark red*/
+}
+
+a:visited
+{
+	color: #8B0000;	/*dark red*/
+}
+
+a:hover
+{
+	color: #E9DDC6;	/*background brown*/
+}
+
+/* Background pattern from subtlepatterns.com */
+
+/* END CHANGES HERE */
+  </style>
+  <body>
+    <header>
+	  <hr>
+      <h1 class="ubuntu red negative">CS 1653 Project P3 Writeup</h1>
+	  
+      <h2>
+<!-- BEGIN CHANGES HERE -->
+
+	<p class="ubuntu red negative">Brought to you by three strapping young lads:</p>
+	<p class="ubuntu red left">Adam "Darr" Darr</p>
+	<p class="ubuntu red center">John "Ponytails" Felen</p> 
+	<p class="ubuntu red right">Ryan "Big Mac" McDonald</p>
+	<hr  id="navbar">
+	
+<!-- END CHANGES HERE -->
+      </h2>
+      <nav>
+        <a class = "ubuntu navitem" href = "#overview">Overview</a>
+        <a class = "ubuntu navitem" href = "#threat1">Threat 1</a>
+        <a class = "ubuntu navitem" href = "#threat2">Threat 2</a>
+        <a class = "ubuntu navitem" href = "#threat3">Threat 3</a>
+        <a class = "ubuntu navitem" href = "#threat4">Threat 4</a>
+        <a class = "ubuntu navitem" href = "#discussion">Discussion</a>
+      </nav>
+    </header>
+    <section id="overview" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Overview</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>Taking into consideration the volume of large-scale security breaches that have been making their way into the eyes of the media a lot more these days, it goes without saying that security features are a must have within any system connected to the vast public network of the Internet.  
+Often times, we limit those that may have access to a system based on a set of credentials such as a username and password but that simply is not enough to keep malicious users from gaining access.  
+There are ample ways in which a malicious user can breach a system but there is no single protocol that can prevent all attacks.  
+For this group-based file sharing server, we will use a combination of many well-tested cryptographic techniques to provide security for a select number of threats.  
+We plan to make heavy use of SHA-256 hashing in which we employ mechanisms such as AES encryption using symmetric keys and public/private key encryption via RSA.  
+In addition to creating these encrypted keys, we plan to utilize protocols such as Encrypted Key Exchange (EKE) with a Diffie-Hellman key exchange at its core.</p>
+
+<!-- END CHANGES HERE -->
+    </section>
+    <section id="threat1" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Threat T1: Unauthorized Token Issuance</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>Unauthorized token issuance refers to a client requesting a user token that they should not be authorized to use. 
+The exploitation of this threat in our current file system implementation is trivial since there is no mechanism to authenticate users. 
+A malicious user simply needs to know the username of one of the users on the system to gain access to a valid user token which thereby allows the malicious user to impersonate the real user and gain access to all the functionality associated with their account.</p>
+
+<p>The mechanism our group will use to prevent unauthorized token issuance is the encrypted key exchange (EKE) protocol which can be used to protect against both passive and active attackers attempting to access an unauthorized token.  
+A diagram for the protocol in shown below:</p>
+
+<center><img src = "img/eke.jpg"></img></center>
+
+<p>In short, the EKE protocol involves the client and server sharing a weak secret which can simply be the result of a hash function of the user’s password. 
+Then a Diffie-Hellman key exchange is performed where the exchange is encrypted on both sides with that weak secret. 
+One key difference from Diffie-Hellman is that challenges are sent from both the client and server in the latter half of the protocol to provide for mutual authentication.</p>
+
+<p>In our project we will implement the hash function as a SHA-256 hash. 
+We believe this hash function will be sufficient for our project since it is a known hash algorithm used in many applications that has been approved for use by the NIST. 
+Obviously in order to perform a SHA-256 hash of the password we will also need to implement password functionality within the file system. 
+Upon account creation, passwords will be stored in our user list as SHA-256 hashes. 
+Additionally, we must define the symmetric key encryption algorithm that should be used in the mechanism. 
+For this, AES-256 seems like a good candidate since it takes 256 bit keys and our hash is also 256 bits. 
+Finally, we will ensure that our prime value p in g<sup>b</sup> mod p will be a Mersenne prime (2<sup>n</sup> – 1). 
+This is done because a value larger than 2<sup>n</sup> will result in an algorithm that is easier to attack.</p>
+
+<p>This mechanism is sufficient for addressing the threat of unauthorized token issuance since it provides both secure key exchange as well as mutual authentication. 
+The correctness of this algorithm is shown by the fact that key derivation is based on a user’s password. 
+Since the user is assumed to know his or her password and the server knows the SHA-256 hash of his or her password, the client can simply compute the SHA-256 hash of the user’s password providing for both the user and server to agree on the same key. 
+This mechanism also provides for security since an attacker attempting to guess a password will always get a randomized output, even if they guess the correct password since g<sup>b</sup> mod p looks random if b is not known. 
+This prevents offline password guessing. Additionally, this prevents a passive attacker since they will gain no information by observing the key exchange and an active attacker since offline password guessing becomes futile.</p>
+
+<!-- END CHANGES HERE -->
+    </section>
+    <section id="threat2" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Threat T2: Token Modification/Forgery</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>Users are not trustworthy.  It's a fact.  
+Our users may attempt to modify their UserToken to give themselves higher privileges.  
+Any file server should be able to check the UserToken was not forged after it was given to the user.</p>
+
+<p>For instance, a low level user may want to get to higher levels of access that they are barred from.  
+After the user receives their token they may try to use a different, or modified, token which will have a higher level of access.  
+Without any security measures, the new token will be considered valid and the user will get their nose into information that they are not allowed to see.</p>
+
+<p>To combat this threat, we will use a RSA signature depicted in the picture below with the silver key being the private key and the golden key being the public key.  
+Bill(red sweater) would be the group server in our case and the the orderer(green suit) would be the user in our case.  
+More specifically, our RSA key will will be using 1024 bit RSA with a SHA-256 hash.  
+The 1024 bit is because we want the already slow security of 1024 bit RSA but not have to slow to a halt with the larger sized RSA keys.  
+We will use a SHA-256 hash for the same reasons as the above <a href="#threat1">threat model</a>.  
+Whenever the group server is first run, it gets a RSA key pair.  
+The public and private keys are saved into two file known as "groupPubKey.txt" and "groupPrivKey.txt", respectively.  
+Every file server that wishes to become a part of the network must have the "groupPubKey.txt" file manually loaded into its source folder by the/a admin.  
+The admin(s) is assumed to be non-malicious because if they were malicious then there is no point using their service.  
+The threads will use this public key to verify signatures that the group thread, who issued the token, (supposedly)signed.</p>
+
+  <center><img src = "img/signature.png"></img></center>
+
+<p>Whenever a client tries to do any operation on either the group or file server, the token's stored signature will be verified by the respective thread. 
+The token is being sent through encrypted envelopes, from the session key created in <a href="#threat1"> threat 1</a>. 
+A thread then receives the encrypted envelope, which thankfully is not delivered from USPS.  
+When the envelope is decrypted successfully, the thread will use their on-board verifyToken() method to verify if the token has not been modified.  
+If the token was indeed modified the user cannot do anything.  
+If the token was not modified then the user is free to be in their correct access level.  </p>
+
+<p>This mechanism should work to protect against forged tokens.  
+The checks will be performed from the group thread or any of the file threads.  
+If the token is not verified the user will not be able to do anything, except log out, on either a file or the group server.</p>   
+
+<!-- END CHANGES HERE -->
+    </section>
+    <section id="threat3" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Threat T3: Unauthorized File Servers</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>With the constant threat of imposters lurking about, it is certainly not out of the realm of possibility for there to be a phony file server <i>s’</i> pretending to be the file server <i>s</i> of which a user is trying to gain access to.  
+Such imposters could very well be detrimental to a user who is trusting that the content they have access to is what they expect it to be because these malevolent servers may be set up with malicious content on them.</p>
+
+<p>If we did not have anything in place, a malevolent server <i>s’</i> may pretend to be server <i>s</i>.  
+Server <i>s’</i> could have documents that look the same as what the user expects but they may have attacks embedded within them such as a virus.  
+If the user downloads the false file then they will have thereby compromised their machine and potentially anyone else who connects with them.</p>
+
+<p>This threat will be dealt with in such a way that is somewhat similar to threat 2 but with an approach that is reminiscent of how SSH protocol works.  
+Upon initialization of a file server, a 1024-bit RSA key pair will be generated whereas the client will maintain a list of trusted file servers.  
+The list of trusted file servers will contain items such as the IP address, port number and public key of the file servers whom have already been deemed to be trusted.</p>
+
+<p>During a connection request of a client to a file server, the client application will check a list of file servers of which the client application has connected to once before.  
+If the file server is contained within this server list then the client application will proceed (explained later).  
+Should the requested file server not exist within the list then the public key of the file server will be requested so that the user may manually verify whether or not they trust this file server after viewing its public key.  
+Should they accept and thereby agree to trust this server, it will then be added to the file server list.</p>
+
+<p>Once the file server is deemed to be trusted, the client application can then initiate steps to further validate its authenticity, the client will generate a random number.  
+It will then be encrypted with the file servers public key and then sent to the file server.  
+The file server, upon receiving this challenge, will decrypt the message using its private key thereby extracting this random number.  
+The file server will then take the random number and increment it by 1.  
+The file server will then sign this new value (using the private key) and send it back to the client.  
+The client application will then encrypt it with the servers public key and verify that it was the same value passed in incremented by 1.  
+If this holds true, then the authenticity of the file server has been verified to the client because only the server knows its own private key so it is the only part that can sign a message and have it verified by its public key. 
+Thus, communications can safely continue.</p>
+
+<p>This mechanism will sufficiently address the threat of malicious file servers lurking about by firstly verifying that the specified server has been accessed before.  
+If it is not, the user must decide whether they trust it or not this way both parties have a shared key in which provides mutual trust.  
+There is then always a verification challenge to help fortify correctness.  
+During the course of this verification, the file server must have the correct secret private key in order to properly decrypt the challenge and also must have the private key in order to sign its response.  
+Thus, correctness of the proper fileserver is upheld as no phony file server would have this private key.</p>
+
+<!-- END CHANGES HERE -->
+    </section>
+    <section id="threat4" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Threat T4: Information Leakage via Passive Monitoring</a></h2>
+
+<p>Passive monitoring refers to the fact that someone could potentially listen in on the communications between the clients and servers in our file system. 
+Currently all of our information is sent from the client to the server and vice versa in plaintext. 
+This means that information about the communications between the clients and servers is leaked to anyone who listens in on the network.  
+An attacker could exploit this by attempting to discover private information such as passwords, user groups, or files that the user has uploaded. 
+This is problematic because users usually have a certain expectation of confidentiality when it comes to their data. 
+As such information passed in plaintext poses huge problems for a user’s confidence in our system.</p>
+
+<p>Interestingly, since this phase of the project makes the trust assumption that the group server is entirely secure (and account creation is done entirely on the group server) we can just use the K value, generated from our encrypted key exchange algorithm that is used when authorizing user tokens, as a session key for the group server. 
+Let’s look at the EKE algorithm again:</p>
+
+  <center><img src = "img/eke.jpg"></img></center>
+
+<p>First, we see that our group server needs a hash of the password. 
+This is obtained during account creation on the group server which is assumed to be entirely trustworthy. 
+Next, we see that the Diffie-Hellman key exchange (encrypted with our symmetric key W which is a hash of our password) is performed and both the client and server generate a shared session key K. 
+This shared session key K is then used to mutually authenticate between the client and the server. 
+Since this shared session key K is only known by the client and server, and is also trusted to send challenges across the network, it should be a good candidate for use in encrypting all traffic across the network. 
+Additionally, the fact that the mechanism is performed at login time helps make it an even more viable candidate. 
+For our specific implementation details including algorithms, modes of operation, and key lengths see <a href = "#threat1">threat 1</a>.</p>
+
+<p>This is a sufficient mechanism for addressing information leakage in the group server since it provides for data confidentiality, security, and correctness. 
+Data confidentiality is preserved since only the group client and group server know the shared session key after authentication. 
+Since all traffic will be encrypted with this key, a passive attacker will only get back garbage when they attempt to listen in. 
+Additionally, since a new session key is generated each time a user logs in, freshness is preserved. 
+Security in the protocol itself is provided by the fact that the encrypted key exchange protocol looks random to a passive attacker. 
+Even if the attacker guesses the correct hash of the password this output will look random if b is unknown to the attacker (in g<sup>b</sup> mod p). 
+Finally, correctness is preserved by the fact that both the server and the client will know the hash of the user’s password.</p>
+
+    </section>
+    <section id="discussion" class = "section">
+      <h2 class="ubuntu red"><a href="#navbar">Discussion</a></h2>
+<!-- BEGIN CHANGES HERE -->
+
+<p>From the get go we had some form of the finalized ideas in the threat model.  
+After meeting with Professor Garrison and being barraged by gruelling questions we updated our threat models to be more well rounded and have better security measures.
+Threat T4 backbones off of T1 because T4 uses the session key that was created from T1's encrypted key exchange.
+T1 not only logs the user in but valdiates that the user is who they say they are.
+T2 then is the meat of the file sharing system.  
+Without T2 cracking down on rule breaking users, users would be rampant ignoring the system's rules and there would be no order to the group level access schema that the system provides. 
+T3 is then used to protect clients from malicious, identity thieving, phony, file servers.  
+These malevolent file servers could harm the users of the system.  
+Ergo, T3 will verify to a user if file server <i>s</i> is actually file server <i>s</i>, not file server <i>s'</i>.
+</p>
+
+<p> Our extra credit for phase 3 of the project consisted more of extra added detail in the project, rather than a whole new interface like the GUI in phase 2.  
+We streamlined the process of the user interface so that instead of having to click to connect to a group server, at log in you will automatically be connected, if you have correct credentials of course.  
+Speaking of credentials, both "UserInterface.java" and "UserInterfaceGUI.java" now hide the user's password when they type it in.  
+Hiding the password also adds a bit of security from peering eyes.  
+Furthermore, this write-up had a good facelift from the original .htm document we were given to work with.  
+We were going for an hipster urban coffee shop vibe a la in the picture below.  
+We also had a favicon(still in the code at the very top) but it stopped working, for some reason, a few hours before the due date.  
+Favicons are very bipolar in whether they want to work and on which browser they will work so it may just be one of those times.
+Ironically, when the previous sentence was finished and the page was reloaded before pushing to BitBucket, only minutes before the due date, the favicon decided to work!</p>
+
+<center><img src = "img/urban_coffee.jpg"></img></center>
+
+<!-- END CHANGES HERE -->
+    </section>
+	
+	<hr>
+	<p class="red" align="center"> Fin: CS 1653 Project P3 Writeup </p>
+	<hr>
+  </body>
+</html>
+
